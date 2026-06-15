@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    config:
+      enabled: false
+
+
+server:
+  port: 7070
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true # Prevents the server from registering as a client to itself
+    fetch-registry: true
+    service-url:
+      defaultZone: http://service-registry:8761/eureka
+

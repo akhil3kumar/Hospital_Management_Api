@@ -73,6 +73,19 @@ services:
       - config-server
       - service-registry
 
+  doctor-service:
+    build:
+      context: ./doctor-service
+    container_name: doctor-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+      - config-server
+      - service-registry
+
   api-gateway:
     build:
       context: ./api-gateway

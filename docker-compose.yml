@@ -1,11 +1,10 @@
-version: "3"
 services:
+
   mysql:
     image: mysql:8.0
     container_name: mysql-db
-    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: Akhil@123
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: patientdb
       MYSQL_USER: user
       MYSQL_PASSWORD: password
@@ -17,17 +16,62 @@ services:
   adminer:
     image: adminer
     container_name: mysql-adminer
-    restart: always
     ports:
       - "9090:8080"
+    depends_on:
+      - mysql
+
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: hospital_pg_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: hospital_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@hospital.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+  config-server:
+    build:
+      context: ./config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
 
   service-registry:
     build:
       context: ./service-registry
     container_name: service-registry
-    restart: always
     ports:
       - "8761:8761"
+    depends_on:
+      - config-server
+
+  patient-service:
+    build:
+      context: ./patient-service
+    container_name: patient-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+      - config-server
+      - service-registry
 
   api-gateway:
     build:
@@ -38,30 +82,10 @@ services:
     ports:
       - "7070:7070"
     depends_on:
-      - service-registry
-
-  patient-service:
-    build:
-      context: ./patient-service
-    container_name: patient-service
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-    restart: always
-    ports:
-      - "8081:8081"
-    depends_on:
-      - mysql
-      - service-registry
-
-  hospital-ui:
-    build:
-      context: ../Hospital_Management_UI
-    container_name: hospital-ui
-    restart: always
-    ports:
-      - "8080:80"
-    depends_on:
       - patient-service
+      - config-server
+      - service-registry
 
 volumes:
- mysql_data:
+  mysql_data:
+  postgres_data:

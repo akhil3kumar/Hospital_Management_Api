@@ -1,9 +1,7 @@
 package com.akhil.doctor_service.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.inn.common.enums.Specialization;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -15,16 +13,23 @@ import lombok.*;
 public class Doctor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
-    private String specialization;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Specialization specialization;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false, unique = true)
     private String phoneNumber;
 
-    private Boolean available;
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean available = true;
 }

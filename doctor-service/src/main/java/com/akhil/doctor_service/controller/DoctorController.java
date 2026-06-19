@@ -2,8 +2,9 @@ package com.akhil.doctor_service.controller;
 
 import com.akhil.doctor_service.dto.AvailabilityRequest;
 import com.akhil.doctor_service.dto.DoctorRequest;
-import com.akhil.doctor_service.dto.DoctorResponse;
 import com.akhil.doctor_service.service.DoctorService;
+import com.inn.common.dto.doctor_service.DoctorResponse;
+import com.inn.common.enums.Specialization;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,22 +49,22 @@ public class DoctorController {
 
     @GetMapping("/specialization/{specialization}")
     public ResponseEntity<List<DoctorResponse>> getDoctorsBySpecialization
-            (@PathVariable String specialization) {
+            (@PathVariable Specialization specialization) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(doctorService.getDoctorsBySpecialization(specialization));
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<DoctorResponse>> getDoctorsByAvailablilty
+    public ResponseEntity<List<DoctorResponse>> getDoctorsByAvailability
             () {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(doctorService.getDoctorsByAvailablilty());
+                .body(doctorService.getDoctorsByAvailability());
     }
 
     @PatchMapping("/{id}/availability")
-    public ResponseEntity<DoctorResponse> updateDoctorByIdAndAvailablity(@PathVariable Long id,
-                                                           @RequestBody @Valid AvailabilityRequest availabilityRequestrequest) {
+    public ResponseEntity<DoctorResponse> updateDoctorAvailability(@PathVariable Long id,
+                                                           @RequestBody @Valid AvailabilityRequest availabilityRequest) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(doctorService.updateDoctorByIdAndAvailablity(id,availabilityRequestrequest));
+                .body(doctorService.updateDoctorAvailability(id,availabilityRequest));
     }
 }

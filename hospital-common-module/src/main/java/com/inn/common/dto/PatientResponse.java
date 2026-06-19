@@ -1,4 +1,4 @@
-package com.akhil.patient_service.dto;
+package com.inn.common.dto;
 
 import lombok.Builder;
 

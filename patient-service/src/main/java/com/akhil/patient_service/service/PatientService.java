@@ -1,9 +1,9 @@
 package com.akhil.patient_service.service;
 
 
-import com.akhil.patient_service.dto.PatientRequest;
-import com.akhil.patient_service.dto.PatientResponse;
-import com.akhil.patient_service.entity.Patient;
+
+import com.inn.common.dto.patient_service.PatientRequest;
+import com.inn.common.dto.patient_service.PatientResponse;
 
 import java.util.List;
 
@@ -16,5 +16,6 @@ public interface PatientService {
 
     PatientResponse updatePatient(Long patientId, PatientRequest request);
 
-    void deletePatient(Long patientId);
+    void deactivePatient(Long patientId);
+
 }

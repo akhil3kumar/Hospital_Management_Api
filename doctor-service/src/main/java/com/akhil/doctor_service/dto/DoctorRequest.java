@@ -1,5 +1,6 @@
 package com.akhil.doctor_service.dto;
 
+import com.inn.common.enums.Specialization;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -14,13 +15,20 @@ public record DoctorRequest(
 
         @NotBlank(message = "Specialization is required")
         @Size(min = 3, max = 100, message = "Specialization must be between 3 and 100 characters")
-        String specialization,
+        @Pattern(
+                regexp = "^[a-zA-Z ]+$",
+                message = "Name can contain only letters and spaces"
+        )
+        Specialization specialization,
 
         @NotBlank(message = "Email is required")
         @Email(message = "Email should be valid")
         String email,
 
         @NotBlank(message = "Phone number is required")
-        @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be exactly 10 digits")
+        @Pattern(
+                regexp = "^[6-9][0-9]{9}$",
+                message = "Phone number must be a valid Indian mobile number"
+        )
         String phoneNumber
 ) {}

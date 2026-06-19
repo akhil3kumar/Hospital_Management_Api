@@ -1,6 +1,7 @@
 package com.akhil.doctor_service.repository;
 
 import com.akhil.doctor_service.entity.Doctor;
+import com.inn.common.enums.Specialization;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,9 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
-    Optional<Doctor> findByIdAndAvailableTrue(Long doctorId);
 
     List<Doctor> findByAvailableTrue();
 
-    List<Doctor> findBySpecializationAndAvailableTrue(String specialization);
+    List<Doctor> findBySpecializationAndAvailableTrue(Specialization specialization);
 }

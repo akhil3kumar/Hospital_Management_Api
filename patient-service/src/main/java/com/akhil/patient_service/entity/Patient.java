@@ -3,6 +3,8 @@ package com.akhil.patient_service.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "patient")
 @NoArgsConstructor
@@ -18,4 +20,13 @@ public class Patient {
     private String name;
     private Integer age;
     private String disease;
+    private String gender;
+    @Column(unique = true)
+    private String email;
+    @Column(unique = true)
+    private String phoneNumber;
+    private String address;
+    private Boolean active;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

@@ -1,6 +1,7 @@
 package com.akhil.doctor_service.dto;
 
 import com.akhil.doctor_service.entity.Doctor;
+import com.inn.common.dto.doctor_service.DoctorResponse;
 import org.springframework.stereotype.Component;
 
 
@@ -13,7 +14,6 @@ public class DoctorMapper {
                 .specialization(request.specialization())
                 .email(request.email())
                 .phoneNumber((request.phoneNumber()))
-                .available(true)
                 .build();
     }
 

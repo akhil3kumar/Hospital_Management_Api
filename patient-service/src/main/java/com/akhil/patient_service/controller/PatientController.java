@@ -1,7 +1,7 @@
 package com.akhil.patient_service.controller;
 
-import com.akhil.patient_service.dto.PatientRequest;
-import com.akhil.patient_service.dto.PatientResponse;
+import com.inn.common.dto.patient_service.PatientRequest;
+import com.inn.common.dto.patient_service.PatientResponse;
 import com.akhil.patient_service.service.PatientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,9 +40,9 @@ public class PatientController {
         return  ResponseEntity.status(HttpStatus.OK).body(patientService.updatePatient(patientId,request));
     }
 
-    @DeleteMapping("/{patientId}")
-    public ResponseEntity<Void> deletePatient(@PathVariable Long patientId) {
-        patientService.deletePatient(patientId);
+    @PatchMapping("/{patientId}")
+    public ResponseEntity<Void> deactivePatient(@PathVariable Long patientId) {
+        patientService.deactivePatient(patientId);
         return  ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

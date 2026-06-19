@@ -2,7 +2,8 @@ package com.akhil.doctor_service.service;
 
 import com.akhil.doctor_service.dto.AvailabilityRequest;
 import com.akhil.doctor_service.dto.DoctorRequest;
-import com.akhil.doctor_service.dto.DoctorResponse;
+import com.inn.common.dto.doctor_service.DoctorResponse;
+import com.inn.common.enums.Specialization;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -18,9 +19,9 @@ public interface DoctorService {
 
     void deleteDoctor(Long doctorId);
 
-    List<DoctorResponse> getDoctorsBySpecialization(String specialization);
+    List<DoctorResponse> getDoctorsBySpecialization(Specialization specialization);
 
-    List<DoctorResponse> getDoctorsByAvailablilty();
+    List<DoctorResponse> getDoctorsByAvailability();
 
-    DoctorResponse updateDoctorByIdAndAvailablity(Long id, AvailabilityRequest availabilityRequestrequest);
+    DoctorResponse updateDoctorAvailability(Long id, AvailabilityRequest availabilityRequestrequest);
 }

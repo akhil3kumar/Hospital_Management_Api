@@ -11,5 +11,5 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 LABEL authors="akhil"
 
-EXPOSE 8081
+EXPOSE 8888
 ENTRYPOINT ["java","-jar","app.jar"]

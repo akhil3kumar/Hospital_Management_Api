@@ -7,6 +7,8 @@ import com.akhil.appointment_service.entity.Appointment;
 import com.akhil.appointment_service.entity.AppointmentStatus;
 import com.akhil.appointment_service.feignClient.DoctorFeignClient;
 import com.akhil.appointment_service.feignClient.PatientFeignClient;
+import com.akhil.appointment_service.kafka.AppointmentCreatedEvent;
+import com.akhil.appointment_service.kafka.AppointmentEventProducer;
 import com.akhil.appointment_service.repository.AppointmentRepository;
 import com.akhil.appointment_service.service.AppointmentService;
 import com.inn.common.dto.doctor_service.DoctorResponse;
@@ -30,6 +32,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final DoctorFeignClient doctorFeignClient;
     private final PatientFeignClient patientFeignClient;
     private final AppointmentMapper appointmentMapper;
+    private final AppointmentEventProducer producer;
     @Override
     public AppointmentResponse createAppointment(AppointmentRequest request) {
 
@@ -46,6 +49,18 @@ public class AppointmentServiceImpl implements AppointmentService {
         Appointment savedAppointment = appointmentRepository.save(appointmentMapper.toEntity(request));
         log.info("Created Appointment with id: " + savedAppointment.getId());
 
+        // add the appointment in kafka event
+        AppointmentCreatedEvent event =
+                AppointmentCreatedEvent.builder()
+                        .appointmentId(savedAppointment.getId())
+                        .patientId(savedAppointment.getPatientId())
+                        .doctorId(savedAppointment.getDoctorId())
+                        .appointmentTime(
+                                savedAppointment.getAppointmentDateTime()
+                                        .toString())
+                        .build();
+
+        producer.publishAppointmentCreated(event);
         return appointmentMapper.toResponse(savedAppointment);
     }
 

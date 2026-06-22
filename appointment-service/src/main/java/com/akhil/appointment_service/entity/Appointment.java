@@ -22,7 +22,8 @@ public class Appointment {
     @Column(nullable = false)
     private Long patientId;
 
-    private LocalDateTime appointmentDateTime;
+    private LocalDateTime appointmentTime;
+
     @Enumerated(EnumType.STRING)
     private AppointmentStatus appointmentStatus;
 

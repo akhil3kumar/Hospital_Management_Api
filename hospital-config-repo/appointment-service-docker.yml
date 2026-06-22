@@ -1,6 +1,6 @@
 spring:
   application:
-    name: patient-service
+    name: appointment-service
 
   datasource:
     url: jdbc:postgresql://postgres-db:5432/hospital_pg_db

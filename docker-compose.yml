@@ -112,7 +112,10 @@ services:
 
   doctor-service:
     build:
-      context: ./doctor-service
+      context: .
+      dockerfile: doctor-service/Dockerfile
+#      context: ./doctor-service
+
     container_name: doctor-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
@@ -125,7 +128,8 @@ services:
 
   appointment-service:
     build:
-      context: ./appointment-service
+      context: .
+      dockerfile: appointment-service/Dockerfile
     container_name: appointment-service
     environment:
       SPRING_PROFILES_ACTIVE: docker

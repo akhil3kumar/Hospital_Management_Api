@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
                 .name(registerReq.name())
                 .password(encoder.encode(registerReq.password()))
                 .email(registerReq.email())
-                .role(Role.CUSTOMER)
+                .role(Role.PATIENT)
                 .active(true)
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())

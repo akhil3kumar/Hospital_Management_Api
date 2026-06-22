@@ -29,4 +29,6 @@ public class Appointment {
 
     private String reason;
 
+    private AppointmentStatus status;
+
 }

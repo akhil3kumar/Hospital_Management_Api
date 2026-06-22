@@ -56,7 +56,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                         .patientId(savedAppointment.getPatientId())
                         .doctorId(savedAppointment.getDoctorId())
                         .appointmentTime(
-                                savedAppointment.getAppointmentDateTime()
+                                savedAppointment.getAppointmentTime()
                                         .toString())
                         .build();
 
@@ -96,7 +96,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setDoctorId(request.doctorId());
         appointment.setPatientId(request.patientId());
 
-        appointment.setAppointmentDateTime(request.appointmentTime());
+        appointment.setAppointmentTime(request.appointmentTime());
         appointment.setAppointmentStatus(AppointmentStatus.SCHEDULED);
         appointment.setReason(request.reason());
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
-@FeignClient(name = "doctor-service" )
+@FeignClient(name = "doctor-service")
 @RequestMapping("/doctors")
 public interface DoctorFeignClient {
 
@@ -16,9 +16,11 @@ public interface DoctorFeignClient {
     DoctorResponse findDoctorById(@PathVariable("doctorId") Long id);
 
     @GetMapping("/{doctorId}/schedules")
-    DoctorScheduleResponse getSchedulesByDoctorId(Long doctorId);
+    DoctorScheduleResponse getSchedulesByDoctorId(@PathVariable("doctorId") Long doctorId);
 
     @GetMapping("/{doctorId}/availability")
-    AvailabilityResponse checkAvailabilityForSlot(Long doctorId, LocalDateTime appointmentTime);
-
+    AvailabilityResponse checkAvailabilityForSlot(
+            @PathVariable("doctorId") Long doctorId,
+            @RequestParam("appointmentTime") LocalDateTime appointmentTime
+    );
 }

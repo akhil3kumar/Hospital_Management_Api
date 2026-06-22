@@ -2,6 +2,11 @@ spring:
   application:
     name: appointment-service
 
+  cloud:
+    openfeign:
+      discovery:
+        enabled: true
+
   datasource:
     url: jdbc:postgresql://localhost:5432/hospital_pg_db
     username: postgres

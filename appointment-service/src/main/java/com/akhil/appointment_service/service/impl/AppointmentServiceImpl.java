@@ -7,12 +7,12 @@ import com.akhil.appointment_service.entity.Appointment;
 import com.akhil.appointment_service.entity.AppointmentStatus;
 import com.akhil.appointment_service.feignClient.DoctorFeignClient;
 import com.akhil.appointment_service.feignClient.PatientFeignClient;
-import com.akhil.appointment_service.kafka.AppointmentCreatedEvent;
 import com.akhil.appointment_service.kafka.AppointmentEventProducer;
 import com.akhil.appointment_service.repository.AppointmentRepository;
 import com.akhil.appointment_service.service.AppointmentService;
 import com.inn.common.dto.doctor_service.DoctorResponse;
-import com.inn.common.dto.PatientResponse;
+import com.inn.common.dto.kafka.AppointmentCreatedEvent;
+import com.inn.common.dto.patient_service.PatientResponse;
 import com.inn.common.exception.BusinessValidationException;
 import com.inn.common.exception.ConflictException;
 import com.inn.common.exception.ResourceNotFoundException;
@@ -36,15 +36,18 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public AppointmentResponse createAppointment(AppointmentRequest request) {
 
-        validateAppointment(request.patientId(), request.doctorId(), request.appointmentTime());
+        // validate the request for patient, doctor, doctor available, slot available
 
-        if (appointmentRepository.existsByDoctorIdAndAppointmentTime(
-                request.doctorId(),
-                request.appointmentTime())) {
+        PatientResponse patientResponse = validateAndGetPatientById(request.patientId());
 
-            throw new ConflictException(
-                    "Appointment slot already booked");
-        }
+        DoctorResponse doctorResponse = validateAndGetDoctorById(request.doctorId());
+
+        validateAppointmentTime(request.appointmentTime());
+
+        validateDoctorSlotAvailability(request.doctorId(), request.appointmentTime());
+
+        validateAppointmentSlot(request.doctorId(), request.appointmentTime());
+
 
         Appointment savedAppointment = appointmentRepository.save(appointmentMapper.toEntity(request));
         log.info("Created Appointment with id: " + savedAppointment.getId());
@@ -53,16 +56,67 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentCreatedEvent event =
                 AppointmentCreatedEvent.builder()
                         .appointmentId(savedAppointment.getId())
-                        .patientId(savedAppointment.getPatientId())
-                        .doctorId(savedAppointment.getDoctorId())
-                        .appointmentTime(
-                                savedAppointment.getAppointmentTime()
-                                        .toString())
+                        .patientId(patientResponse.id())
+                        .patientName(patientResponse.name())
+                        .patientEmail(patientResponse.email())
+                        .doctorId(doctorResponse.id())
+                        .doctorName(doctorResponse.name())
+                        .appointmentDate(
+                                savedAppointment.getAppointmentTime().toString())
                         .build();
 
         producer.publishAppointmentCreated(event);
         return appointmentMapper.toResponse(savedAppointment);
     }
+
+
+    private PatientResponse validateAndGetPatientById(Long patientId) {
+
+        log.debug("Validating appointment for patient {}", patientId);
+        PatientResponse patientResponse = patientFeignClient.getPatientById(patientId);
+
+        if ( patientResponse== null) {
+            throw new ResourceNotFoundException("Patient Not Found with id: " + patientId);
+        }
+
+        return patientResponse;
+    }
+
+    private DoctorResponse validateAndGetDoctorById(Long doctorId) {
+        log.debug("Validating appointment for doctor {}", doctorId);
+        DoctorResponse doctorResponse = doctorFeignClient.findDoctorById(doctorId);
+        if (doctorResponse == null) {
+            throw new ResourceNotFoundException("Doctor Not Found with id: " + doctorId);
+        }
+
+        if(!doctorResponse.available()){
+            throw new BusinessValidationException("Doctor is currently unavailable");
+        }
+
+        return doctorResponse;
+    }
+
+    private void validateAppointmentTime(LocalDateTime appointmentTime) {
+        if (appointmentTime.isBefore(LocalDateTime.now())) {
+            throw new BusinessValidationException(
+                    "Appointment time cannot be in the past");
+        }
+    }
+
+    private void validateDoctorSlotAvailability(Long doctorId, LocalDateTime appointmentTime) {
+        if (!doctorFeignClient.checkAvailabilityForSlot(doctorId, appointmentTime).isAvailable()) {
+            throw new ConflictException(
+                    "Doctor Availability For Slot Not Available");
+        }
+    }
+
+    private void validateAppointmentSlot(Long doctorId, LocalDateTime appointmentTime) {
+        if (appointmentRepository.existsByDoctorIdAndAppointmentTime(doctorId, appointmentTime)) {
+            throw new ConflictException(
+                    "Appointment slot already booked");
+        }
+    }
+
 
     @Override
     public List<AppointmentResponse> getAllAppointment() {
@@ -87,7 +141,20 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new BusinessValidationException(
                     "Cancelled appointment cannot be modified");
         }
-        validateAppointment(request.patientId(), request.doctorId(), request.appointmentTime());
+
+        // validate the request for patient, doctor, doctor available, slot available
+
+        PatientResponse patientResponse = validateAndGetPatientById(request.patientId());
+
+        DoctorResponse doctorResponse = validateAndGetDoctorById(request.doctorId());
+
+        validateAppointmentTime(request.appointmentTime());
+
+        validateDoctorSlotAvailability(request.doctorId(), request.appointmentTime());
+
+        validateAppointmentSlot(request.doctorId(), request.appointmentTime());
+
+
         if (appointmentRepository.existsByDoctorIdAndAppointmentTimeAndIdNot(request.doctorId(),
                 request.appointmentTime(),appointmentId) ) {
             throw new ConflictException("Appointment slot already booked");
@@ -141,34 +208,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         return list.stream().map(appointmentMapper::toResponse).toList();
     }
 
-    private void validateAppointment(Long patientId, Long doctorId, LocalDateTime appointmentTime) {
-        log.debug("Validating appointment for patient {} and doctor {}",
-                patientId,
-                doctorId);
-        PatientResponse patientResponse = patientFeignClient.getPatientById(patientId);
-
-        if ( patientResponse== null) {
-            throw new ResourceNotFoundException("Patient Not Found with id: " + patientId);
-        }
-
-        DoctorResponse doctorResponse = doctorFeignClient.findDoctorById(doctorId);
-        if (doctorResponse == null) {
-            throw new ResourceNotFoundException("Doctor Not Found with id: " + doctorId);
-        }
-
-        if(!doctorResponse.available()){
-            throw new BusinessValidationException("Doctor is currently unavailable");
-        }
-
-        if (appointmentTime.isBefore(LocalDateTime.now())) {
-            throw new BusinessValidationException(
-                    "Appointment time cannot be in the past");
-        }
-
-        if(!doctorFeignClient.checkAvailabilityForSlot(doctorId, appointmentTime).isAvailable()){
-            throw new ConflictException("Doctor Availability For Slot Not Available");
-        }
-    }
 
     private Appointment findAppointmentById(Long appointmentId) {
 

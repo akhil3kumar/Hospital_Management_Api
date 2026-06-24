@@ -1,5 +1,7 @@
     package com.akhil.appointment_service.config;
 
+    import jakarta.annotation.PostConstruct;
+    import lombok.extern.slf4j.Slf4j;
     import org.apache.kafka.clients.producer.ProducerConfig;
     import org.apache.kafka.common.serialization.StringSerializer;
     import org.springframework.beans.factory.annotation.Value;
@@ -14,10 +16,16 @@
     import java.util.Map;
 
     @Configuration
+    @Slf4j
     public class KafkaProducerConfig {
 
         @Value("${spring.kafka.bootstrap-servers}")
         private String bootstrapServers;
+
+        @PostConstruct
+        public void printKafkaConfig() {
+            log.info("Kafka Bootstrap Servers = {}", bootstrapServers);
+        }
 
         @Bean
         public ProducerFactory<String, Object> producerFactory() {

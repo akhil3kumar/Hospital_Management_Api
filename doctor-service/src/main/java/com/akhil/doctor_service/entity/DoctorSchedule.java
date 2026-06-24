@@ -1,9 +1,6 @@
 package com.akhil.doctor_service.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.DayOfWeek;
@@ -23,6 +20,7 @@ public class DoctorSchedule {
 
     private Long doctorId;
 
+    @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek;
 
     private LocalTime startTime;

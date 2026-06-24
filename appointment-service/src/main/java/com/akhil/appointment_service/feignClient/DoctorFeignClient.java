@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
-@FeignClient(name = "doctor-service")
-@RequestMapping("/doctors")
+@FeignClient(name = "doctor-service", path = "/doctors")
+
 public interface DoctorFeignClient {
 
     @GetMapping("/{doctorId}")

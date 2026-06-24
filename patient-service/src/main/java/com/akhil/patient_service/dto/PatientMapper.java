@@ -5,6 +5,8 @@ import com.inn.common.dto.patient_service.PatientRequest;
 import com.inn.common.dto.patient_service.PatientResponse;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class PatientMapper {
 
@@ -18,6 +20,8 @@ public class PatientMapper {
                 .address(request.address())
                 .disease(request.disease())
                 .active(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 

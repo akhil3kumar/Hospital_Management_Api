@@ -20,12 +20,12 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
 
     @PostMapping
-    public ResponseEntity<AppointmentResponse> createAppointment(AppointmentRequest request){
+    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody @Valid AppointmentRequest request){
         return ResponseEntity.status(HttpStatus.CREATED).body(appointmentService.createAppointment(request));
     }
 
     @GetMapping
-    public ResponseEntity<List<AppointmentResponse>> getAllAppointment(AppointmentRequest request){
+    public ResponseEntity<List<AppointmentResponse>> getAllAppointment(){
         return ResponseEntity.ok(appointmentService.getAllAppointment());
     }
 
@@ -51,13 +51,13 @@ public class AppointmentController {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAllAppointmentByPatientId(patientId));
     }
 
-    @GetMapping("/patient/{doctorId}")
+    @GetMapping("/doctor/{doctorId}")
     public ResponseEntity<List<AppointmentResponse>> getAllAppointmentByDoctorId(@PathVariable Long doctorId) {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAllAppointmentByDoctorId(doctorId));
     }
 
     @GetMapping("status/{status}")
-    public ResponseEntity<List<AppointmentResponse>> getAppointmentByStatus(AppointmentStatus status){
+    public ResponseEntity<List<AppointmentResponse>> getAppointmentByStatus(@PathVariable AppointmentStatus status){
         return ResponseEntity.status(HttpStatus.OK).body(appointmentService.getAppointmentByStatus(status));
     }
 

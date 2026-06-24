@@ -1,10 +1,7 @@
 package com.akhil.doctor_service.dto;
 
 import com.inn.common.enums.Specialization;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 @Builder
@@ -13,12 +10,7 @@ public record DoctorRequest(
         @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
         String name,
 
-        @NotBlank(message = "Specialization is required")
-        @Size(min = 3, max = 100, message = "Specialization must be between 3 and 100 characters")
-        @Pattern(
-                regexp = "^[a-zA-Z ]+$",
-                message = "Name can contain only letters and spaces"
-        )
+        @NotNull(message = "Specialization is required")
         Specialization specialization,
 
         @NotBlank(message = "Email is required")

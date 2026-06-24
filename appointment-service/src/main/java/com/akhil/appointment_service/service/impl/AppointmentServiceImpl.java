@@ -136,7 +136,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentResponse> getAppointmentByStatus(AppointmentStatus status) {
-        List<Appointment> list=appointmentRepository.findByStatus(status);
+        List<Appointment> list=appointmentRepository.findByAppointmentStatus(status);
 
         return list.stream().map(appointmentMapper::toResponse).toList();
     }

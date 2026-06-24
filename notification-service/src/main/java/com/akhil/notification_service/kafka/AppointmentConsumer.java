@@ -18,6 +18,7 @@ public class AppointmentConsumer {
             groupId = "notification-group"
     )
     public void consume(AppointmentCreatedEvent event) {
+        log.info("Received Event : {}", event);
 
         log.info(
                 "Received appointment event: {}",

@@ -14,7 +14,7 @@ public class AppointmentConsumer {
     private final NotificationService notificationService;
 
     @KafkaListener(
-            topics = "appointment-created",
+            topics = "appointment-created-topic",
             groupId = "notification-group"
     )
     public void consume(AppointmentCreatedEvent event) {
@@ -26,5 +26,7 @@ public class AppointmentConsumer {
 
         notificationService
                 .sendAppointmentConfirmation(event);
+
+
     }
 }

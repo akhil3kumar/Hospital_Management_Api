@@ -21,12 +21,16 @@ public class Notification {
 
     private String recipient;
 
+    // Email subject
     private String subject;
 
     @Column(length = 1000)
     private String message;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private NotificationStatus status;
 
     private LocalDateTime sentAt;
+
+    private LocalDateTime createdAt;
 }

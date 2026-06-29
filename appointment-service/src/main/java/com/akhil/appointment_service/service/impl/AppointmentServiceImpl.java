@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -62,11 +64,11 @@ public class AppointmentServiceImpl implements AppointmentService {
                         .doctorId(doctorResponse.id())
                         .doctorName(doctorResponse.name())
                         .appointmentDate(
-                                savedAppointment.getAppointmentTime().toString())
+                                savedAppointment.getAppointmentTime())
                         .build();
 
         producer.publishAppointmentCreated(event);
-        return appointmentMapper.toResponse(savedAppointment);
+        return appointmentMapper.toResponse(savedAppointment,patientResponse.name(),doctorResponse.name());
     }
 
 
@@ -122,13 +124,22 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<AppointmentResponse> getAllAppointment() {
         List<Appointment> appointmentList = appointmentRepository.findAll();
 
-        return appointmentList.stream().map(appointmentMapper::toResponse).toList();
+        return appointmentList.stream().map(appointment -> {
+            DoctorResponse doctorResponse = validateAndGetDoctorById(appointment.getDoctorId());
+            PatientResponse patientResponse = validateAndGetPatientById(appointment.getPatientId());
+
+            return appointmentMapper.toResponse(appointment,patientResponse.name() ,doctorResponse.name());
+        }).collect(Collectors.toList());
+
     }
 
     @Override
     public AppointmentResponse getSpecificAppointment(Long appointmentId) {
         Appointment appointment = findAppointmentById(appointmentId);
-        return appointmentMapper.toResponse(appointment);
+        DoctorResponse doctorResponse = validateAndGetDoctorById(appointment.getDoctorId());
+        PatientResponse patientResponse = validateAndGetPatientById(appointment.getPatientId());
+
+        return appointmentMapper.toResponse(appointment,patientResponse.name(),doctorResponse.name());
     }
 
     @Transactional
@@ -169,7 +180,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         Appointment updatedAppointment = appointmentRepository.save(appointment);
 
-        return appointmentMapper.toResponse(updatedAppointment);
+        return appointmentMapper.toResponse(updatedAppointment,patientResponse.name(),doctorResponse.name());
     }
 
     @Override
@@ -191,21 +202,35 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public List<AppointmentResponse> getAllAppointmentByPatientId(Long patientId) {
         List<Appointment> appointmentList = appointmentRepository.findByPatientId(patientId);
+        return appointmentList.stream().map(appointment -> {
+            DoctorResponse doctorResponse = validateAndGetDoctorById(appointment.getDoctorId());
+            PatientResponse patientResponse = validateAndGetPatientById(appointment.getPatientId());
 
-        return appointmentList.stream().map(appointmentMapper::toResponse).toList();
+            return appointmentMapper.toResponse(appointment,patientResponse.name() ,doctorResponse.name());
+        }).collect(Collectors.toList());
     }
 
     @Override
     public List<AppointmentResponse> getAllAppointmentByDoctorId(Long doctorId) {
         List<Appointment> appointmentList =  appointmentRepository.findByDoctorId(doctorId);
-        return appointmentList.stream().map(appointmentMapper::toResponse).toList();
+        return appointmentList.stream().map(appointment -> {
+            DoctorResponse doctorResponse = validateAndGetDoctorById(appointment.getDoctorId());
+            PatientResponse patientResponse = validateAndGetPatientById(appointment.getPatientId());
+
+            return appointmentMapper.toResponse(appointment,patientResponse.name() ,doctorResponse.name());
+        }).collect(Collectors.toList());
     }
 
     @Override
     public List<AppointmentResponse> getAppointmentByStatus(AppointmentStatus status) {
-        List<Appointment> list=appointmentRepository.findByAppointmentStatus(status);
+        List<Appointment> appointmentList=appointmentRepository.findByAppointmentStatus(status);
 
-        return list.stream().map(appointmentMapper::toResponse).toList();
+        return appointmentList.stream().map(appointment -> {
+            DoctorResponse doctorResponse = validateAndGetDoctorById(appointment.getDoctorId());
+            PatientResponse patientResponse = validateAndGetPatientById(appointment.getPatientId());
+
+            return appointmentMapper.toResponse(appointment,patientResponse.name() ,doctorResponse.name());
+        }).collect(Collectors.toList());
     }
 
 

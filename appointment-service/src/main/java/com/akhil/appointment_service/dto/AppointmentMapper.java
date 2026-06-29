@@ -19,11 +19,13 @@ public class AppointmentMapper {
     }
 
 
-    public AppointmentResponse toResponse(Appointment savedAppointment) {
+    public AppointmentResponse toResponse(Appointment savedAppointment, String patientName, String doctorName) {
         return AppointmentResponse.builder()
                 .id(savedAppointment.getId())
                 .doctorId(savedAppointment.getDoctorId())
+                .doctorName(doctorName)
                 .patientId(savedAppointment.getPatientId())
+                .patientName(patientName)
                 .appointmentTime(savedAppointment.getAppointmentTime())
                 .reason(savedAppointment.getReason())
                 .appointmentStatus(savedAppointment.getAppointmentStatus().toString())

@@ -20,7 +20,7 @@ public class AppointmentCreatedEvent {
     private Long doctorId;
     private String doctorName;
 
-    private LocalDate appointmentDate;
+    private LocalDateTime appointmentDate;
 
     private LocalTime appointmentTime;
 }

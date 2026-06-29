@@ -17,10 +17,11 @@ public record PatientRequest(
         @NotBlank(message = "Gender is required")
         String gender,
 
+        @NotBlank(message = "Email is required")
         @Email
         String email,
 
-        @NotBlank
+        @NotBlank(message = "Phone Number is required")
         String phoneNumber,
 
         String address,
